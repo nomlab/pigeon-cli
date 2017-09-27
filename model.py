@@ -19,8 +19,7 @@ class Model:
                                         4,
                                         activation = 'relu',
                                         padding = 'same'),
-                                        # FIXME: there are magic number!
-                                        input_shape=(14, 24, 3)))
+                                        input_shape=input_shape))
         model.add(TimeDistributed(Convolution1D(nfilters,
                                         2,
                                         activation = 'relu',
