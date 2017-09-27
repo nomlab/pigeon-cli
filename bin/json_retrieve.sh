@@ -1,9 +1,8 @@
 #!/bin/sh
 
-STARDATE='20160401'
-ENDDATE='20170131'
-# 環境変数APIKEYにフレームワークスのAPIキーを保持させておく
-# APIKEY=<YOUR_API_KEY>
+STARDATE=$1 # 20160401
+ENDDATE=$2  # 20170131
+APIKEY=$3   # <YOUR_APIKEY>
 
 if [ ! -e ./json ] ; then
     mkdir ./json
