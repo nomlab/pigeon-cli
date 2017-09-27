@@ -1,5 +1,5 @@
-* pigeon-cli
-+ *pigeon-cli* is command line tool for predicing hems using Deep Learning.
+* Pigeon-CLI
++ *Pigeon-CLI* is command line tool for predicing hems using Deep Learning.
 ** Requires
 + Comming soon...
 ** Usage
