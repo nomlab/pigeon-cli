@@ -57,10 +57,10 @@ def stayprob(args):
         dataset = utils.prepare_dataset(hems_df, colnames = ['power_usage', 'gas_usage', 'water_usage'])
         stayprobs.extend(utils.calc_stayprob(dataset))
     probs = [{'timestamp': dt, 'val': prob} for [dt, prob] in zip(dataframe["timestamp"].values, stayprobs)]
-    data = {'hems_id': dics['hems_id'],
+    data = [{'hems_id': dics['hems_id'],
             'lat': dics['lat'],
             'lng': dics['lng'],
-            'probability': probs}
+            'probability': probs}]
     utils.write_json(args.output, data)
 
 parser = argparse.ArgumentParser(
@@ -113,7 +113,7 @@ parser_json2csv.add_argument('hems_id',
                              help = 'Input hems id you want to covert')
 parser_json2csv.add_argument('-d', '--dir',
                              help = 'Specify input dir for convert',
-                             action = 'store', required = True)
+                             action = 'store', default = 'json')
 parser_json2csv.add_argument('-o', '--output',
                              help = 'Specify json file to output predicted data',
                              type = argparse.FileType('w'),
