@@ -1,6 +1,106 @@
 * Pigeon-CLI
 + *Pigeon-CLI* is command line tool for predicing hems using Deep Learning.
-** Requires
-+ Comming soon...
-** Usage
-+ Comming soon...
+
+** Requirements
++ Python 3.5.x
++ Tensorflow 1.1.0 (if you can't install using `pip -r install requirements.txt`)
++ HDF5 Library
++ curl
+
+** Install
+#+BEGIN_SRC sh
+$ pip -r install requirements.txt
+#+END_SRC
+
+** Examples
+1. Get hems data from frameworks.
+#+BEGIN_SRC sh
+$ bin/json_retrieve.sh 20160401 20170131 <YOUR_APIKEY>
+#+END_SRC
+1. Calculate energy usages from hems data.
+#+BEGIN_SRC sh
+$ python pigeon-cli.py usages -d json HGW2864422167 -o HGW2864422167.json
+#+END_SRC
+1. Train energy usages using Deep Learning.
+#+BEGIN_SRC sh
+$ python pigeon-cli.py train -o model.h5 HGW2864422167.json
+#+END_SRC
+1. Predict future energy usages from trained model.
+#+BEGIN_SRC sh
+$ python python pigeon-cli.py predict -o predicted.json HGW2864422167.json model.h5 48
+#+END_SRC
+1. Calculate stay probability from predicted energy usages.
+#+BEGIN_SRC sh
+$ python pigeon-cli.py stayprob -o stayprob.json predicted.json
+#+END_SRC
+1. Post stay probability to Pigeon-WebApp.
+#+BEGIN_SRC sh
+$ cat stayprob.json | bin/post_json.sh 'http://pigeon.example.com/api/registration'
+#+END_SRC
+
+** Command Usages
++ `usages` command
+#+BEGIN_SRC sh
+$ python pigeon-cli.py usages --help
+usage: python pigeon-cli.py usages [-h] [-d DIR] [-o OUTPUT] [--lat LAT]
+                                   [--lng LNG]
+                                   hems_id
+
+positional arguments:
+  hems_id               Hems id you want to transform
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -d DIR, --dir DIR     Directory has target hems data to transform (default
+                        is 'json')
+  -o OUTPUT, --output OUTPUT
+                        Output file (default is stdout)
+  --lat LAT             Latitude corresponding to hems id
+  --lng LNG             Longitude corresponding to hems id
+#+END_SRC
++ `train` command
+#+BEGIN_SRC sh
+$ python pigeon-cli.py train --help
+usage: python pigeon-cli.py train [-h] [-o OUTPUT] [-e EPOCH] [-b BATCH]
+                                  [file]
+
+positional arguments:
+  file                  Input file (default is stdin)
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -o OUTPUT, --output OUTPUT
+                        Output h5 file (default is 'model.h5')
+  -e EPOCH, --epoch EPOCH
+                        The number of training epochs (default is 100)
+  -b BATCH, --batch BATCH
+                        The number of batches (default is 500)
+#+END_SRC
++ `predict` command
+#+BEGIN_SRC sh
+$ python pigeon-cli.py predict --help
+usage: python pigeon-cli.py predict [-h] [-o OUTPUT] [file] model n_pred
+
+positional arguments:
+  file                  Input file (default is stdin)
+  model                 h5 file to load trained model (default is 'model.h5')
+  n_pred                The number of predict in sequence
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -o OUTPUT, --output OUTPUT
+                        Output file (default is stdout)
+#+END_SRC
++ `stayprob` command
+#+BEGIN_SRC sh
+$ python pigeon-cli.py stayprob --help
+usage: python pigeon-cli.py stayprob [-h] [-o OUTPUT] [file]
+
+positional arguments:
+  file                  Input file (default is stdin)
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -o OUTPUT, --output OUTPUT
+                        Output file (default is stdout)
+#+END_SRC
