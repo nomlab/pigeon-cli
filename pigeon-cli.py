@@ -40,7 +40,7 @@ def predict(args):
                       'values': predicted}
     utils.write_json(args.output, predicted_hems)
 
-def json2csv(args):
+def usages(args):
     dics = utils.read_jsons_in_order(args.dir + "/*.json")
     utils.sort_by_time(dics, 'frameworx:date')
     hems_lst = HemsCollection(dics, args.hems_id, args.lat, args.lng)
@@ -65,7 +65,7 @@ def stayprob(args):
 
 parser = argparse.ArgumentParser(
     prog = 'pred-hems.py',
-    usage = 'pigeon-cli <command> --help',
+    usage = 'python pigeon-cli.py',
     description = 'pigeon-cli is command line tool for predicting hems using Keras.',
     add_help = True)
 
@@ -74,63 +74,67 @@ subparser = parser.add_subparsers(title = 'SubCommands',
                                   help = '...')
 
 parser_train = subparser.add_parser('train',
-                                    usage = 'pigeon-cli train []',
-                                    help = 'train data and save model and weights')
+                                    help = 'Train data and save trained model')
 parser_train.add_argument('file', nargs = '?',
-                          help = 'Specify input dir for train',
+                          help = 'Input file (default is stdin)',
                           type = argparse.FileType('r'),
                           default = sys.stdin)
 parser_train.add_argument('-o', '--output',
-                          help = 'Specify h5 file to output model',
+                          help = 'Output h5 file (default is \'model.h5\')',
                           action = 'store', default = 'model.h5')
 parser_train.add_argument('-e', '--epoch',
-                          help = 'Specify the number of epochs when train',
+                          help = 'The number of training epochs (default is 100)',
                           action = 'store', type = int, default = 100)
 parser_train.add_argument('-b', '--batch',
-                          help = 'Specify the number of batches',
+                          help = 'The number of batches (default is 500)',
                           action = 'store', type = int, default = 500)
 parser_train.set_defaults(func = train)
 
-parser_predict = subparser.add_parser('predict', help = 'predict hems data from trained model')
+parser_predict = subparser.add_parser('predict',
+                                      help = 'Predict data from trained model')
 parser_predict.add_argument('file', nargs = '?',
-                            help = 'Specify input file for predict',
+                            help = 'Input file (default is stdin)',
                             type = argparse.FileType('r'),
                             default = sys.stdin)
 parser_predict.add_argument('model',
-                            help = 'Specify h5 file to load trained model',
-                            action = 'store')
+                            help = 'h5 file to load trained model (default is \'model.h5\')',
+                            action = 'store', default = 'model.h5')
 parser_predict.add_argument('n_pred',
-                            help = 'Input number how long to predict in sequential',
+                            help = 'The number of predict in sequence',
                             type = int)
 parser_predict.add_argument('-o', '--output',
-                            help = 'Specify json file to output predicted data',
+                            help = 'Output file (default is stdout)',
                             type = argparse.FileType('w'),
                             default = sys.stdout)
 parser_predict.set_defaults(func = predict)
 
-parser_json2csv = subparser.add_parser('json2csv', help = 'Convert hems data to csv from json')
-parser_json2csv.add_argument('hems_id',
-                             help = 'Input hems id you want to covert')
-parser_json2csv.add_argument('-d', '--dir',
-                             help = 'Specify input dir for convert',
-                             action = 'store', default = 'json')
-parser_json2csv.add_argument('-o', '--output',
-                             help = 'Specify json file to output predicted data',
-                             type = argparse.FileType('w'),
-                             default = sys.stdout)
-parser_json2csv.add_argument('--lat',
-                             default = 10.0, type = float)
-parser_json2csv.add_argument('--lng',
-                             default = 10.0, type = float)
-parser_json2csv.set_defaults(func = json2csv)
+parser_usages = subparser.add_parser('usages',
+                                     help = 'Transform to energy usages from hems')
+parser_usages.add_argument('hems_id',
+                           help = 'Hems id you want to transform')
+parser_usages.add_argument('-d', '--dir',
+                           help = 'Directory has target hems data to transform (default is \'json\')',
+                           action = 'store', default = 'json')
+parser_usages.add_argument('-o', '--output',
+                           help = 'Output file (default is stdout)',
+                           type = argparse.FileType('w'),
+                           default = sys.stdout)
+parser_usages.add_argument('--lat',
+                           help = 'Latitude corresponding to hems id',
+                           default = 10.0, type = float)
+parser_usages.add_argument('--lng',
+                           help = 'Longitude corresponding to hems id',
+                           default = 10.0, type = float)
+parser_usages.set_defaults(func = usages)
 
-parser_stayprob = subparser.add_parser('stayprob', help = 'Calclate Stay Probability from energy usages')
+parser_stayprob = subparser.add_parser('stayprob',
+                                       help = 'Calclate Stay Probability from energy usages')
 parser_stayprob.add_argument('file', nargs = '?',
-                             help = 'The csv file has power_usage, gas_usage and water_usage per hour',
+                             help = 'Input file (default is stdin)',
                              type = argparse.FileType('r'),
                              default = sys.stdin)
 parser_stayprob.add_argument('-o', '--output',
-                             help = 'File to output Stay Probability',
+                             help = 'Output file (default is stdout)',
                              type = argparse.FileType('w'),
                              default = sys.stdout)
 parser_stayprob.set_defaults(func = stayprob)
